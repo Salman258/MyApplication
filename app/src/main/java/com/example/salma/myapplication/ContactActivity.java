@@ -11,6 +11,7 @@ import android.widget.EditText;
 public class ContactActivity extends AppCompatActivity {
 
     EditText Name;
+    EditText phone;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
