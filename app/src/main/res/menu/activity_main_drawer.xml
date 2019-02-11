@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+
+
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Home" />
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="About"/>
+        <item
+            android:id="@+id/nav_media"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Media" />
+
+    <item android:title="Donate">
+        <menu>
+            <item
+                android:id="@+id/nav_sadqa"
+                android:icon="@drawable/ic_menu_camera"
+                android:title="Sadqa" />
+            <item
+                android:id="@+id/nav_aqiqah"
+                android:icon="@drawable/ic_menu_gallery"
+                android:title="Aqiqa" />
+        </menu>
+    </item>
+
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_contact"
+                android:icon="@drawable/ic_menu_camera"
+                android:title="Contact Us" />
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Share" />
+        </menu>
+    </item>
+
+</menu>
