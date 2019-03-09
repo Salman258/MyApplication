@@ -26,30 +26,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Saylani Welfare");
 
-        /***********************Code For Floating Button************************
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                final Intent intent = new Intent(Intent.ACTION_VIEW)
-                        .setType("plain/text")
-                        .setData(Uri.parse("test@gmail.com"))
-                        .setClassName("com.google.android.gm", "com.google.android.gm.ComposeActivityGmail")
-                        .putExtra(Intent.EXTRA_EMAIL, new String[]{"test@gmail.com"})
-                        .putExtra(Intent.EXTRA_SUBJECT, "test")
-                        .putExtra(Intent.EXTRA_TEXT, "hello. this is a message sent from my demo app :-)");
-                startActivity(intent);
-
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-        **********************************************************************/
-
-
-        /**************************Code For Drawer Open/Close*************************/
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -81,12 +58,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+        int id = item.getItemId();
         if (id == R.id.action_settings) {
 
             Intent i = new Intent(getApplicationContext(),SettingsActivity.class);
