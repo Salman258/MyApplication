@@ -2,13 +2,16 @@ package com.example.salma.myapplication;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -67,6 +70,9 @@ public class ContactActivity extends AppCompatActivity {
         insta =(ImageView)findViewById(R.id.img_insta);
         AndroidNetworking.initialize(getApplicationContext());
 
+        btnSubmit.setTextColor(Color.WHITE);
+        btnSubmit.setBackgroundColor(Color.BLUE);
+
         fb.setClickable(true);
         twitter.setClickable(true);
         yt.setClickable(true);
@@ -93,7 +99,7 @@ public class ContactActivity extends AppCompatActivity {
                 Log.e("phone",phone);
                 Log.e("Message",message);
 
-                AndroidNetworking.get("http://saylaniwelfare.net/add-Entry.php")
+                AndroidNetworking.get("http://saylaniwelfare.net/add-contact-entry.php")
                         .addQueryParameter("name",Name)
                         .addQueryParameter("email",Email)
                         .addQueryParameter("phone",phone)
@@ -104,7 +110,23 @@ public class ContactActivity extends AppCompatActivity {
                         .getAsString(new StringRequestListener() {
                             @Override
                             public void onResponse(String response) {
-                                Log.e("response",response);
+                                name.getText().clear();
+                                email.getText().clear();
+                                phoneNumber.getText().clear();
+                                msg.getText().clear();
+                                if(response.contains("sucess")){
+                                    AlertDialog alertDialog = new AlertDialog.Builder(ContactActivity.this).create();
+                                    alertDialog.setTitle("Thank You");
+                                    alertDialog.setMessage("We have received your information and we will contact you soon ");
+                                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            });
+                                    alertDialog.show();
+                                }
+
                             }
 
                             @Override
@@ -112,7 +134,6 @@ public class ContactActivity extends AppCompatActivity {
 
                             }
                         });
-
             }
         });
 
@@ -161,9 +182,7 @@ public class ContactActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Instagram",Toast.LENGTH_LONG).show();
                 Uri uri = Uri.parse("http://instagram.com/_u/saylaniwelfare");
                 Intent likeIng = new Intent(Intent.ACTION_VIEW, uri);
-
                 likeIng.setPackage("com.instagram.android");
-
                 try {
                     startActivity(likeIng);
                 } catch (ActivityNotFoundException e) {
