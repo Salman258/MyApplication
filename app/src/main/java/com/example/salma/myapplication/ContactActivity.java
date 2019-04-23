@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.icu.text.IDNA;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
@@ -42,6 +43,7 @@ public class ContactActivity extends AppCompatActivity {
     private TextView phoneSaylani;
     private TextView emailSaylani;
     private TextView addressSaylani;
+    private TextView ErrorSaylani;
     private ImageView fb;
     private ImageView twitter;
     private ImageView yt;
@@ -64,6 +66,7 @@ public class ContactActivity extends AppCompatActivity {
         phoneSaylani =(TextView)findViewById(R.id.PhoneVal);
         emailSaylani = (TextView)findViewById(R.id.emailVal);
         addressSaylani = (TextView)findViewById(R.id.addressVal);
+        ErrorSaylani = (TextView)findViewById(R.id.txtError);
         fb = (ImageView) findViewById(R.id.img_fb);
         twitter =(ImageView)findViewById(R.id.img_twitter);
         yt =(ImageView)findViewById(R.id.img_yt);
@@ -86,6 +89,7 @@ public class ContactActivity extends AppCompatActivity {
         assert getSupportActionBar() != null;   //null check
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -99,41 +103,54 @@ public class ContactActivity extends AppCompatActivity {
                 Log.e("phone",phone);
                 Log.e("Message",message);
 
-                AndroidNetworking.get("http://saylaniwelfare.net/add-contact-entry.php")
-                        .addQueryParameter("name",Name)
-                        .addQueryParameter("email",Email)
-                        .addQueryParameter("phone",phone)
-                        .addQueryParameter("msg",message)
-                        .setTag("Contact")
-                        .setPriority(Priority.HIGH)
-                        .build()
-                        .getAsString(new StringRequestListener() {
-                            @Override
-                            public void onResponse(String response) {
-                                name.getText().clear();
-                                email.getText().clear();
-                                phoneNumber.getText().clear();
-                                msg.getText().clear();
-                                if(response.contains("sucess")){
-                                    AlertDialog alertDialog = new AlertDialog.Builder(ContactActivity.this).create();
-                                    alertDialog.setTitle("Thank You");
-                                    alertDialog.setMessage("We have received your information and we will contact you soon ");
-                                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                                            new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    dialog.dismiss();
-                                                }
-                                            });
-                                    alertDialog.show();
-                                }
+                if(!(Name.isEmpty() || Email.isEmpty() || phone.isEmpty() || message.isEmpty())) {
+                    if (Email.contains("@")  && Email.contains(".")) {
+                        AndroidNetworking.get("http://saylaniwelfare.net/add-contact-entry.php")
+                                .addQueryParameter("name", Name)
+                                .addQueryParameter("email", Email)
+                                .addQueryParameter("phone", phone)
+                                .addQueryParameter("msg", message)
+                                .setTag("Contact")
+                                .setPriority(Priority.HIGH)
+                                .build()
+                                .getAsString(new StringRequestListener() {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        name.getText().clear();
+                                        email.getText().clear();
+                                        phoneNumber.getText().clear();
+                                        msg.getText().clear();
+                                        if (response.contains("sucess")) {
+                                            AlertDialog alertDialog = new AlertDialog.Builder(ContactActivity.this).create();
+                                            alertDialog.setTitle("Thank You");
+                                            alertDialog.setMessage("We have received your information and we will contact you soon ");
+                                            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                                    new DialogInterface.OnClickListener() {
+                                                        public void onClick(DialogInterface dialog, int which) {
+                                                            dialog.dismiss();
+                                                        }
+                                                    });
+                                            alertDialog.show();
+                                            ErrorSaylani.setText("");
+                                        }
 
-                            }
+                                    }
 
-                            @Override
-                            public void onError(ANError anError) {
+                                    @Override
+                                    public void onError(ANError anError) {
 
-                            }
-                        });
+                                    }
+                                });
+                    }
+                    else{
+                        ErrorSaylani.setTextColor(Color.RED);
+                        ErrorSaylani.setText("Please enter a valid Email");
+                    }
+                }
+                else{
+                    ErrorSaylani.setTextColor(Color.RED);
+                    ErrorSaylani.setText("Please fill in all the fields");
+                }
             }
         });
 

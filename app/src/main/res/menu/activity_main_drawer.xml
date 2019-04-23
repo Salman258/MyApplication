@@ -14,9 +14,9 @@
             android:icon="@drawable/ic_menu_camera"
             android:title="About"/>
         <item
-            android:id="@+id/nav_media"
+            android:id="@+id/nav_track"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Media" />
+            android:title="Track Donation" />
 
     <item android:title="Donate">
         <menu>

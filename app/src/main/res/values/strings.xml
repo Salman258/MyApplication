@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Saylani Welfare</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -79,96 +79,61 @@
     <string name="title_activity_sadqa">Sadqa</string>
     <string name="title_activity_about"><font color="black"></font>About</string>
     <string name="large_text">
-        "Material is the metaphor.\n\n"
+        <b>"Introduction\n\n"</b>
 
-        "A material metaphor is the unifying theory of a rationalized space and a system of motion."
-        "The material is grounded in tactile reality, inspired by the study of paper and ink, yet "
-        "technologically advanced and open to imagination and magic.\n"
-        "Surfaces and edges of the material provide visual cues that are grounded in reality. The "
-        "use of familiar tactile attributes helps users quickly understand affordances. Yet the "
-        "flexibility of the material creates new affordances that supercede those in the physical "
-        "world, without breaking the rules of physics.\n"
-        "The fundamentals of light, surface, and movement are key to conveying how objects move, "
-        "interact, and exist in space and in relation to each other. Realistic lighting shows "
-        "seams, divides space, and indicates moving parts.\n\n"
+		"Established in May 1999 by famous spiritual and religious scholar Maulana Bashir Ahmed Farooqui,"
+		"Saylani Welfare International Trust was built on the fundamentals of breaking the cycle of"
+		"poverty, alleviating the financial troubles of the poor, giving people a chance to live a"
+		"dignified life and spreading happiness.\n\n"
 
-        "Bold, graphic, intentional.\n\n"
+		"We are an organization that believes in lighting up the lives of underprivileged people across"
+		"the world. We endeavor to provide the best quality services in areas including food, education,"
+		"medical and social welfare free of cost to people living in the dark. With over 60 different sectors,\n\n"
 
-        "The foundational elements of print based design typography, grids, space, scale, color, "
-        "and use of imagery guide visual treatments. These elements do far more than please the "
-        "eye. They create hierarchy, meaning, and focus. Deliberate color choices, edge to edge "
-        "imagery, large scale typography, and intentional white space create a bold and graphic "
-        "interface that immerse the user in the experience.\n"
-        "An emphasis on user actions makes core functionality immediately apparent and provides "
-        "waypoints for the user.\n\n"
+		"we feed thousands of hungry people each day, hundreds more are given the hope of life through"
+		"medical health care, many are educated to become leaders of tomorrow and several are given the"
+		"opportunity to stand on their feet financially.\n\n"
 
-        "Motion provides meaning.\n\n"
+        "Today, we are proud to say that our physical presence extends throughout Pakistan with a vast network"
+        "of 125 branches operating in major cities including Karachi, Lahore, Islamabad, Rawalpindi, Hyderabad and"
+	    "Faisalabad. Apart from Pakistan, we have overseas offices in the UK, USA and UAE as well. Our worldwide"
+	    "branches are operating under the guidance of a team of over 2,000 working professionals who help almost"
+	    "125,000 people on a daily basis.\n\n"
 
-        "Motion respects and reinforces the user as the prime mover. Primary user actions are "
-        "inflection points that initiate motion, transforming the whole design.\n"
-        "All action takes place in a single environment. Objects are presented to the user without "
-        "breaking the continuity of experience even as they transform and reorganize.\n"
-        "Motion is meaningful and appropriate, serving to focus attention and maintain continuity. "
-        "Feedback is subtle yet clear. Transitions are efﬁcient yet coherent.\n\n"
+        "We strongly believe that a little help goes a long way and our work would not be possible without the "
+		"generous support of our valuable donors. Our local and international donors have graciously lent us a hand"
+		"by supporting our causes and enabling us to serve the needs of people in need.\n\n"
 
-        "3D world.\n\n"
 
-        "The material environment is a 3D space, which means all objects have x, y, and z "
-        "dimensions. The z-axis is perpendicularly aligned to the plane of the display, with the "
-        "positive z-axis extending towards the viewer. Every sheet of material occupies a single "
-        "position along the z-axis and has a standard 1dp thickness.\n"
-        "On the web, the z-axis is used for layering and not for perspective. The 3D world is "
-        "emulated by manipulating the y-axis.\n\n"
+        "<b>Message from the chairman.\n\n</b>"
 
-        "Light and shadow.\n\n"
+        "<i>Assalam-o-Alaikum</i>\n\n"
 
-        "Within the material environment, virtual lights illuminate the scene. Key lights create "
-        "directional shadows, while ambient light creates soft shadows from all angles.\n"
-        "Shadows in the material environment are cast by these two light sources. In Android "
-        "development, shadows occur when light sources are blocked by sheets of material at "
-        "various positions along the z-axis. On the web, shadows are depicted by manipulating the "
-        "y-axis only. The following example shows the card with a height of 6dp.\n\n"
+        "<i>Who is it that would loan Allah a goodly loan so He may multiply it for him many times over? ( Surat Baqara, Verse 245)</i>\n\n"
 
-        "Resting elevation.\n\n"
+        "It should be noted that Allah, who is in need of no one and nothing, instills upon his men to give Qarz-e-Hasana because it is"
+		"in man’s nature to be frugal whilst spending his wealth. Allah speaks about qarz because it is returned and Allah promises that"
+		"He will return the goodly loan by 70 folds. Allah conveys his message to the Muslim ummah through the Holy Prophet Muhammad"
+		"prompting Muslims to spend their wealth in a certain way. He says,Oh children of Adam! Trust me with your wealth."
+		"If you do so, no fire, flood or thieves will be able to rob you off your money. Instead, you will be endowed with your wealth"
+		"when you most need it. He further says that the poor and weak will not remain hungry and naked except due to the"
+        "negligence ofthe rich, who should not be stingy in spending their money on those worse off than themselves."
+        "Allah will not only take strict accountability from those people but He will also punish them accordingly. "
+        "On the Day Of Judgement, the rich will be humiliated\n\n"
 
-        "All material objects, regardless of size, have a resting elevation, or default elevation "
-        "that does not change. If an object changes elevation, it should return to its resting "
-        "elevation as soon as possible.\n\n"
+		"because they did not help the needy. The needy will complain to Allah and say that all those men on whom you graciously bestowed"
+		"the rights of wealth showed negligence in its proper use; they were busy spending on themselves and forgot about us, the ones"
+		"who needed it. Allah will reply to this and say: “I swear on my respect and glory! I will bring you closer to me"
+		"and push them further away.”\n\n"
 
-        "Component elevations.\n\n"
 
-        "The resting elevation for a component type is consistent across apps (e.g., FAB elevation "
-        "does not vary from 6dp in one app to 16dp in another app).\n"
-        "Components may have different resting elevations across platforms, depending on the depth "
-        "of the environment (e.g., TV has a greater depth than mobile or desktop).\n\n"
-
-        "Responsive elevation and dynamic elevation offsets.\n\n"
-
-        "Some component types have responsive elevation, meaning they change elevation in response "
-        "to user input (e.g., normal, focused, and pressed) or system events. These elevation "
-        "changes are consistently implemented using dynamic elevation offsets.\n"
-        "Dynamic elevation offsets are the goal elevation that a component moves towards, relative "
-        "to the component’s resting state. They ensure that elevation changes are consistent "
-        "across actions and component types. For example, all components that lift on press have "
-        "the same elevation change relative to their resting elevation.\n"
-        "Once the input event is completed or cancelled, the component will return to its resting "
-        "elevation.\n\n"
-
-        "Avoiding elevation interference.\n\n"
-
-        "Components with responsive elevations may encounter other components as they move between "
-        "their resting elevations and dynamic elevation offsets. Because material cannot pass "
-        "through other material, components avoid interfering with one another any number of ways, "
-        "whether on a per component basis or using the entire app layout.\n"
-        "On a component level, components can move or be removed before they cause interference. "
-        "For example, a floating action button (FAB) can disappear or move off screen before a "
-        "user picks up a card, or it can move if a snackbar appears.\n"
-        "On the layout level, design your app layout to minimize opportunities for interference. "
-        "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
-        "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="title_activity_aqiqa">Aqiqa</string>
     <string name="title_activity_contact">Contact</string>
 
+    <string name="message_string">Please fill in all the required details</string>
+
+    
+    <string name="send_to">Share</string>
 
 </resources>

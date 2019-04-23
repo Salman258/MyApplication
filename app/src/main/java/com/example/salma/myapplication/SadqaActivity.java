@@ -1,6 +1,8 @@
 package com.example.salma.myapplication;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,6 +19,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.StringRequestListener;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 public class SadqaActivity extends AppCompatActivity {
 
@@ -24,7 +32,10 @@ public class SadqaActivity extends AppCompatActivity {
     private String donationType;
     private int quantity;
     private String name;
-    private int amountPayable;
+    private double amountPayable;
+    private double amount;
+    private double percentPay;
+    private double amountMultiply;
     private String email;
     private String phoneNumber;
     private String remarks;
@@ -37,6 +48,7 @@ public class SadqaActivity extends AppCompatActivity {
     private EditText txtemail;
     private EditText txtphone;
     private EditText txtremarks;
+    private TextView message;
     private Button btnDonate;
     private TextView amountValue;
     Toolbar toolbar;
@@ -46,16 +58,17 @@ public class SadqaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sadqa);
-        sadqaPay = (Spinner)findViewById(R.id.spinner_sadqa_pay);
-        sadqaType = (Spinner)findViewById(R.id.spinner_sadqa_type);
-        np = (NumberPicker)findViewById(R.id.sadqaQuantity);
-        txtName = (EditText)findViewById(R.id.txtName);
-        txtemail =(EditText)findViewById(R.id.txtEmail);
-        txtphone = (EditText)findViewById(R.id.txtPhone);
-        txtremarks =(EditText)findViewById(R.id.txtRemark);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        btnDonate = (Button)findViewById(R.id.btnDonate);
-        amountValue =(TextView)findViewById(R.id.amountVal);
+        sadqaPay    = (Spinner)findViewById(R.id.spinner_sadqa_pay);
+        sadqaType   = (Spinner)findViewById(R.id.spinner_sadqa_type);
+        np          = (NumberPicker)findViewById(R.id.sadqaQuantity);
+        txtName     = (EditText)findViewById(R.id.txtName);
+        txtemail    = (EditText)findViewById(R.id.txtEmail);
+        txtphone    = (EditText)findViewById(R.id.txtPhone);
+        txtremarks  = (EditText)findViewById(R.id.txtRemark);
+        toolbar     = (Toolbar) findViewById(R.id.toolbar);
+        btnDonate   = (Button)findViewById(R.id.btnDonate);
+        amountValue = (TextView)findViewById(R.id.amountVal);
+        message     = (TextView)findViewById(R.id.txtMessage);
         AndroidNetworking.initialize(getApplicationContext());
 
         btnDonate.setTextColor(Color.WHITE);
@@ -85,17 +98,21 @@ public class SadqaActivity extends AppCompatActivity {
         sadqaType.setAdapter(adapter2);
 
         np.setMinValue(0);
-        np.setMaxValue(10);
+        np.setMaxValue(40);
         np.setValue(0);
+
 
         np.setOnScrollListener(new NumberPicker.OnScrollListener() {
             @Override
             public void onScrollStateChange(NumberPicker numberPicker, int i) {
                 quantity =np.getValue();
-                amountPayable = onSelectedItem(sadqaType.getSelectedItem().toString());
-                amountPayable = amountPayable * quantity;
+                amount = onSelectedItem(sadqaType.getSelectedItem().toString());
+                amountMultiply = amount * quantity;
+                percentPay = amountMultiply * 3 / 100;
+                amountPayable = amountMultiply + percentPay;
                 amountValue.setText(String.valueOf(amountPayable));
                 amountValue.setTextColor(Color.RED);
+
 
             }
         });
@@ -124,19 +141,64 @@ public class SadqaActivity extends AppCompatActivity {
                 remarks = txtremarks.getText().toString();
                 formtype = "3";
                 quantity = np.getValue();
-                amountPayable = onSelectedItem(sadqaType.getSelectedItem().toString());
-                amountPayable = amountPayable * quantity;
+                amount = onSelectedItem(sadqaType.getSelectedItem().toString());
+                amountMultiply = amount * quantity;
+                percentPay = amountMultiply * 3 / 100;
+                amountPayable = amountMultiply + percentPay;
                 amountValue.setText(String.valueOf(amountPayable));
                 amountValue.setTextColor(Color.RED);
 
-                Log.e("transactionType",transactionType);
-                Log.e("Donnation type",donationType);
-                Log.e("quantity",String.valueOf(quantity));
-                Log.e("name",name);
-                Log.e("phone Number",phoneNumber);
-                Log.e("email",email);
-                Log.e("remarks",remarks);
-                Log.e("Amount",String.valueOf(amountPayable));
+                if(!(name.isEmpty() || email.isEmpty() || phoneNumber.isEmpty() || remarks.isEmpty())) {
+                    if(email.contains("@") && email.contains(".")){
+
+                   AndroidNetworking.post("http://saylaniwelfare.net/Saylani/Registration.php")
+                           .setTag("donations")
+                           .setPriority(Priority.HIGH)
+                           .addBodyParameter("form_type","3")
+                           .addBodyParameter("donation_type","1")
+                           .addBodyParameter("OrderName",String.valueOf(onSelectedItem(sadqaType.getSelectedItem().toString())))
+                           .addBodyParameter("OrderDisplay",sadqaType.getSelectedItem().toString())
+                           .addBodyParameter("quantity",String.valueOf(quantity))
+                           .addBodyParameter("Amount",String.valueOf(amountPayable))
+                           .addBodyParameter("Name",name)
+                           .addBodyParameter("OrderInfo",txtemail.getText().toString())
+                           .addBodyParameter("remarks",remarks)
+                           .build()
+                           .getAsString(new StringRequestListener() {
+                               @Override
+                               public void onResponse(String response) {
+                                   Log.e("Respnse", response);
+
+                                   Intent i = new Intent(getApplicationContext(),Webview.class);
+                                   i.putExtra("Response",response);
+                                   startActivity(i);
+                               }
+
+                               @Override
+                               public void onError(ANError anError) {
+
+                               }
+                           });
+
+                    message.setText("");
+                    Log.e("transactionType", transactionType);
+                    Log.e("Donnation type", donationType);
+                    Log.e("quantity", String.valueOf(quantity));
+                    Log.e("name", name);
+                    Log.e("phone Number", phoneNumber);
+                    Log.e("email", email);
+                    Log.e("remarks", remarks);
+                    Log.e("Amount", String.valueOf(amountPayable));
+                }
+                else{
+                        message.setTextColor(Color.RED);
+                        message.setText("Please Enter a valid email");
+                    }
+                }
+                else {
+                        message.setTextColor(Color.RED);
+                        message.setText(R.string.message_string);
+                }
 
             }
         });
