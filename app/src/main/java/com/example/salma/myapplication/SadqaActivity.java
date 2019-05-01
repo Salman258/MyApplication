@@ -1,11 +1,18 @@
 package com.example.salma.myapplication;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -15,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -28,7 +36,7 @@ import java.net.URLEncoder;
 
 public class SadqaActivity extends AppCompatActivity {
 
-    private String transactionType;
+
     private String donationType;
     private int quantity;
     private String name;
@@ -51,6 +59,7 @@ public class SadqaActivity extends AppCompatActivity {
     private TextView message;
     private Button btnDonate;
     private TextView amountValue;
+    private ProgressBar pB;
     Toolbar toolbar;
 
 
@@ -78,6 +87,26 @@ public class SadqaActivity extends AppCompatActivity {
         assert getSupportActionBar() != null;   //null check
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)findViewById(R.id.toolbar_layout);
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = true;
+            int scrollRange = -1;
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
+                }
+                if (scrollRange + verticalOffset == 0) {
+                    collapsingToolbarLayout.setTitle("Sadqah");
+                    isShow = true;
+                } else if(isShow) {
+                    collapsingToolbarLayout.setTitle(" ");
+                    isShow = false;
+                }
+            }
+        });
+
         String[] arraySadqaPay = new String[] {"Bank", "Cash"};
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -85,6 +114,13 @@ public class SadqaActivity extends AppCompatActivity {
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sadqaPay.setAdapter(adapter);
+
+        if(isNetworkConnectionAvailable()){
+
+        }
+        else{
+
+        }
 
 
         String[] arraySadqaType = new String[] {"Goat 5000", "Goat 5500","Goat 6000","Goat 7000","Goat 8000","Goat 9000","Goat 10,000","Goat 12,000","Goat 15,000",
@@ -94,10 +130,12 @@ public class SadqaActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, arraySadqaType);
 
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+
         sadqaType.setAdapter(adapter2);
 
-        np.setMinValue(0);
+
         np.setMaxValue(40);
         np.setValue(0);
 
@@ -120,8 +158,14 @@ public class SadqaActivity extends AppCompatActivity {
         sadqaType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-             np.setValue(0);
-             amountValue.setText("");
+                quantity =np.getValue();
+                amount = onSelectedItem(sadqaType.getSelectedItem().toString());
+                amountMultiply = amount * quantity;
+                percentPay = amountMultiply * 3 / 100;
+                amountPayable = amountMultiply + percentPay;
+                amountValue.setText(String.valueOf(amountPayable));
+                amountValue.setTextColor(Color.RED);
+
             }
 
             @Override
@@ -133,71 +177,75 @@ public class SadqaActivity extends AppCompatActivity {
         btnDonate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                transactionType = sadqaPay.getSelectedItem().toString();
-                donationType = sadqaType.getSelectedItem().toString();
-                name =txtName.getText().toString();
-                phoneNumber = txtphone.getText().toString();
-                email = txtemail.getText().toString();
-                remarks = txtremarks.getText().toString();
-                formtype = "3";
-                quantity = np.getValue();
-                amount = onSelectedItem(sadqaType.getSelectedItem().toString());
-                amountMultiply = amount * quantity;
-                percentPay = amountMultiply * 3 / 100;
-                amountPayable = amountMultiply + percentPay;
-                amountValue.setText(String.valueOf(amountPayable));
-                amountValue.setTextColor(Color.RED);
 
-                if(!(name.isEmpty() || email.isEmpty() || phoneNumber.isEmpty() || remarks.isEmpty())) {
-                    if(email.contains("@") && email.contains(".")){
+                if(isNetworkConnectionAvailable()) {
 
-                   AndroidNetworking.post("http://saylaniwelfare.net/Saylani/Registration.php")
-                           .setTag("donations")
-                           .setPriority(Priority.HIGH)
-                           .addBodyParameter("form_type","3")
-                           .addBodyParameter("donation_type","1")
-                           .addBodyParameter("OrderName",String.valueOf(onSelectedItem(sadqaType.getSelectedItem().toString())))
-                           .addBodyParameter("OrderDisplay",sadqaType.getSelectedItem().toString())
-                           .addBodyParameter("quantity",String.valueOf(quantity))
-                           .addBodyParameter("Amount",String.valueOf(amountPayable))
-                           .addBodyParameter("Name",name)
-                           .addBodyParameter("OrderInfo",txtemail.getText().toString())
-                           .addBodyParameter("remarks",remarks)
-                           .build()
-                           .getAsString(new StringRequestListener() {
-                               @Override
-                               public void onResponse(String response) {
-                                   Log.e("Respnse", response);
+                    donationType = sadqaType.getSelectedItem().toString();
+                    name = txtName.getText().toString();
+                    phoneNumber = txtphone.getText().toString();
+                    email = txtemail.getText().toString();
+                    remarks = txtremarks.getText().toString();
+                    formtype = "3";
+                    quantity = np.getValue();
+                    amount = onSelectedItem(sadqaType.getSelectedItem().toString());
+                    amountMultiply = amount * quantity;
+                    percentPay = amountMultiply * 3 / 100;
+                    amountPayable = amountMultiply + percentPay;
+                    amountValue.setText(String.valueOf(amountPayable));
+                    amountValue.setTextColor(Color.RED);
 
-                                   Intent i = new Intent(getApplicationContext(),Webview.class);
-                                   i.putExtra("Response",response);
-                                   startActivity(i);
-                               }
+                    if (!(name.isEmpty() || email.isEmpty() || phoneNumber.isEmpty())) {
+                        if (email.contains("@") && email.contains(".")) {
 
-                               @Override
-                               public void onError(ANError anError) {
+                            AndroidNetworking.post("http://saylaniwelfare.net/Saylani/Registration.php")
+                                    .setTag("donations")
+                                    .setPriority(Priority.HIGH)
+                                    .addBodyParameter("form_type", "4")
+                                    .addBodyParameter("donation_type", donationType)
+                                    .addBodyParameter("OrderID", phoneNumber)
+                                    .addBodyParameter("OrderName", String.valueOf(onSelectedItem(sadqaType.getSelectedItem().toString())))
+                                    .addBodyParameter("OrderDisplay", sadqaType.getSelectedItem().toString())
+                                    .addBodyParameter("quantity", String.valueOf(quantity))
+                                    .addBodyParameter("Amount", String.valueOf(amountPayable))
+                                    .addBodyParameter("Name", name)
+                                    .addBodyParameter("OrderInfo", txtemail.getText().toString())
+                                    .addBodyParameter("remarks", remarks)
+                                    .build()
+                                    .getAsString(new StringRequestListener() {
+                                        @Override
+                                        public void onResponse(String response) {
+                                            Log.e("Respnse", response);
 
-                               }
-                           });
+                                            Intent i = new Intent(getApplicationContext(), Webview.class);
+                                            i.putExtra("Response", response);
+                                            startActivity(i);
+                                        }
 
-                    message.setText("");
-                    Log.e("transactionType", transactionType);
-                    Log.e("Donnation type", donationType);
-                    Log.e("quantity", String.valueOf(quantity));
-                    Log.e("name", name);
-                    Log.e("phone Number", phoneNumber);
-                    Log.e("email", email);
-                    Log.e("remarks", remarks);
-                    Log.e("Amount", String.valueOf(amountPayable));
-                }
-                else{
-                        message.setTextColor(Color.RED);
-                        message.setText("Please Enter a valid email");
-                    }
-                }
-                else {
+                                        @Override
+                                        public void onError(ANError anError) {
+
+                                        }
+                                    });
+
+                            message.setText("");
+                            Log.e("Donnation type", donationType);
+                            Log.e("quantity", String.valueOf(quantity));
+                            Log.e("name", name);
+                            Log.e("phone Number", phoneNumber);
+                            Log.e("email", email);
+                            Log.e("remarks", remarks);
+                            Log.e("Amount", String.valueOf(amountPayable));
+                        } else {
+                            message.setTextColor(Color.RED);
+                            message.setText("Please Enter a valid email");
+                        }
+                    } else {
                         message.setTextColor(Color.RED);
                         message.setText(R.string.message_string);
+                    }
+
+                }else{
+                    checkNetworkConnection();
                 }
 
             }
@@ -271,5 +319,36 @@ public class SadqaActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp(){
         finish();
         return true;
+    }
+
+
+    public boolean isNetworkConnectionAvailable(){
+        ConnectivityManager cm =
+                (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnected();
+        if(isConnected) {
+            return true;
+        }
+        else{
+            Log.d("Network","Not Connected");
+            return false;
+        }
+    }
+
+    public void checkNetworkConnection(){
+        AlertDialog.Builder builder =new AlertDialog.Builder(this);
+        builder.setTitle("No internet Connection");
+        builder.setMessage("Please turn on internet connection to continue");
+        builder.setNegativeButton("close", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 }

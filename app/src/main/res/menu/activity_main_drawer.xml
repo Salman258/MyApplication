@@ -7,27 +7,28 @@
 
         <item
             android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_camera"
             android:title="Home" />
         <item
             android:id="@+id/nav_about"
-            android:icon="@drawable/ic_menu_camera"
             android:title="About"/>
         <item
             android:id="@+id/nav_track"
-            android:icon="@drawable/ic_menu_camera"
             android:title="Track Donation" />
 
     <item android:title="Donate">
         <menu>
             <item
+                android:id="@+id/nav_general_donation"
+                android:title="Donations" />
+            <item
                 android:id="@+id/nav_sadqa"
-                android:icon="@drawable/ic_menu_camera"
                 android:title="Sadqa" />
             <item
                 android:id="@+id/nav_aqiqah"
-                android:icon="@drawable/ic_menu_gallery"
                 android:title="Aqiqa" />
+            <item
+                android:id="@+id/nav_ramzan_donation"
+                android:title="Ramzan Donations" />
         </menu>
     </item>
 
@@ -36,11 +37,9 @@
         <menu>
             <item
                 android:id="@+id/nav_contact"
-                android:icon="@drawable/ic_menu_camera"
                 android:title="Contact Us" />
             <item
                 android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
                 android:title="Share" />
         </menu>
     </item>

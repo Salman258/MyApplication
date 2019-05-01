@@ -1,5 +1,8 @@
 package com.example.salma.myapplication;
 
+import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.Fragment;
 import android.content.Context;
@@ -13,15 +16,20 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -32,12 +40,16 @@ import javax.xml.datatype.Duration;
 import me.relex.circleindicator.CircleIndicator;
 
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     Toolbar toolbar;
     DrawerLayout drawer;
     NavigationView navigationView;
+    TextView sadqa;
+    TextView aqiqa;
+    TextView donation;
+    TextView ramzan;
+
 
     private static ViewPager mPager;
     private static int currentPage = 0;
@@ -52,6 +64,10 @@ public class MainActivity extends AppCompatActivity
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
+        sadqa =(TextView)findViewById(R.id.link_sadqa);
+        aqiqa = (TextView)findViewById(R.id.link_aqiqa);
+        donation =(TextView)findViewById(R.id.link_donation);
+        ramzan = (TextView)findViewById(R.id.link_ramzan);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Saylani Welfare");
@@ -63,6 +79,39 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         init();
+
+        sadqa.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentSadqah = new Intent(getApplicationContext(),SadqaActivity.class);
+                startActivity(intentSadqah);
+            }
+        });
+
+        aqiqa.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentAqiqa = new Intent(getApplicationContext(),AqiqaActivity.class);
+                startActivity(intentAqiqa);
+            }
+        });
+
+        donation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentDonation = new Intent(getApplicationContext(),DonateActivity.class);
+                startActivity(intentDonation);
+            }
+        });
+
+        ramzan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentRamzan = new Intent(getApplicationContext(),RamzanActivity.class);
+                startActivity(intentRamzan);
+            }
+        });
+
 
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
@@ -146,13 +195,24 @@ public class MainActivity extends AppCompatActivity
 
         }
         else if(id == R.id.nav_track){
-            Toast.makeText(getApplicationContext(),"This feature is not currently available",Toast.LENGTH_LONG).show();
+            Intent trackIntent = new Intent(getApplicationContext(),TrackingActivity.class);
+            startActivity(trackIntent);
+        }
+        else if(id == R.id.nav_general_donation){
+            Intent trackIntent = new Intent(getApplicationContext(),DonateActivity.class);
+            startActivity(trackIntent);
+        }
+        else if(id == R.id.nav_ramzan_donation){
+            Intent trackIntent = new Intent(getApplicationContext(),RamzanActivity.class);
+            startActivity(trackIntent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
 }
 
 

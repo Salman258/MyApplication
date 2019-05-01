@@ -8,8 +8,12 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.icu.text.IDNA;
 import android.media.Image;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -89,67 +93,91 @@ public class ContactActivity extends AppCompatActivity {
         assert getSupportActionBar() != null;   //null check
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)findViewById(R.id.toolbar_layout);
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = true;
+            int scrollRange = -1;
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
+                }
+                if (scrollRange + verticalOffset == 0) {
+                    collapsingToolbarLayout.setTitle("Contact Us");
+                    isShow = true;
+                } else if(isShow) {
+                    collapsingToolbarLayout.setTitle(" ");
+                    isShow = false;
+                }
+            }
+        });
+
 
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Name = name.getText().toString();
-                Email = email.getText().toString();
-                phone = phoneNumber.getText().toString();
-                message =msg.getText().toString();
 
-                Log.e("Name",Name);
-                Log.e("Email",Email);
-                Log.e("phone",phone);
-                Log.e("Message",message);
+                if(isNetworkConnectionAvailable()) {
+                    Name = name.getText().toString();
+                    Email = email.getText().toString();
+                    phone = phoneNumber.getText().toString();
+                    message = msg.getText().toString();
 
-                if(!(Name.isEmpty() || Email.isEmpty() || phone.isEmpty() || message.isEmpty())) {
-                    if (Email.contains("@")  && Email.contains(".")) {
-                        AndroidNetworking.get("http://saylaniwelfare.net/add-contact-entry.php")
-                                .addQueryParameter("name", Name)
-                                .addQueryParameter("email", Email)
-                                .addQueryParameter("phone", phone)
-                                .addQueryParameter("msg", message)
-                                .setTag("Contact")
-                                .setPriority(Priority.HIGH)
-                                .build()
-                                .getAsString(new StringRequestListener() {
-                                    @Override
-                                    public void onResponse(String response) {
-                                        name.getText().clear();
-                                        email.getText().clear();
-                                        phoneNumber.getText().clear();
-                                        msg.getText().clear();
-                                        if (response.contains("sucess")) {
-                                            AlertDialog alertDialog = new AlertDialog.Builder(ContactActivity.this).create();
-                                            alertDialog.setTitle("Thank You");
-                                            alertDialog.setMessage("We have received your information and we will contact you soon ");
-                                            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                                                    new DialogInterface.OnClickListener() {
-                                                        public void onClick(DialogInterface dialog, int which) {
-                                                            dialog.dismiss();
-                                                        }
-                                                    });
-                                            alertDialog.show();
-                                            ErrorSaylani.setText("");
+                    Log.e("Name", Name);
+                    Log.e("Email", Email);
+                    Log.e("phone", phone);
+                    Log.e("Message", message);
+
+                    if (!(Name.isEmpty() || Email.isEmpty() || phone.isEmpty() || message.isEmpty())) {
+                        if (Email.contains("@") && Email.contains(".")) {
+                            AndroidNetworking.get("http://saylaniwelfare.net/add-contact-entry.php")
+                                    .addQueryParameter("name", Name)
+                                    .addQueryParameter("email", Email)
+                                    .addQueryParameter("phone", phone)
+                                    .addQueryParameter("msg", message)
+                                    .setTag("Contact")
+                                    .setPriority(Priority.HIGH)
+                                    .build()
+                                    .getAsString(new StringRequestListener() {
+                                        @Override
+                                        public void onResponse(String response) {
+                                            name.getText().clear();
+                                            email.getText().clear();
+                                            phoneNumber.getText().clear();
+                                            msg.getText().clear();
+                                            if (response.contains("sucess")) {
+                                                Log.d("Response",response);
+                                                AlertDialog alertDialog = new AlertDialog.Builder(ContactActivity.this).create();
+                                                alertDialog.setTitle("Thank You");
+                                                alertDialog.setMessage("We have received your information and we will contact you soon ");
+                                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                                        new DialogInterface.OnClickListener() {
+                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                dialog.dismiss();
+                                                            }
+                                                        });
+                                                alertDialog.show();
+                                                ErrorSaylani.setText("");
+                                            }
+
                                         }
 
-                                    }
+                                        @Override
+                                        public void onError(ANError anError) {
 
-                                    @Override
-                                    public void onError(ANError anError) {
-
-                                    }
-                                });
-                    }
-                    else{
+                                        }
+                                    });
+                        } else {
+                            ErrorSaylani.setTextColor(Color.RED);
+                            ErrorSaylani.setText("Please enter a valid Email");
+                        }
+                    } else {
                         ErrorSaylani.setTextColor(Color.RED);
-                        ErrorSaylani.setText("Please enter a valid Email");
+                        ErrorSaylani.setText("Please fill in all the fields");
                     }
-                }
-                else{
-                    ErrorSaylani.setTextColor(Color.RED);
-                    ErrorSaylani.setText("Please fill in all the fields");
+                }else{
+                    checkNetworkConnection();
                 }
             }
         });
@@ -229,4 +257,37 @@ public class ContactActivity extends AppCompatActivity {
             return FACEBOOK_URL; //normal web url
         }
     }
+
+    public boolean isNetworkConnectionAvailable(){
+        ConnectivityManager cm =
+                (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnected();
+        if(isConnected) {
+            return true;
+        }
+        else{
+            Log.d("Network","Not Connected");
+            return false;
+        }
+    }
+
+    public void checkNetworkConnection(){
+        AlertDialog.Builder builder =new AlertDialog.Builder(this);
+        builder.setTitle("No internet Connection");
+        builder.setMessage("Please turn on internet connection to continue");
+        builder.setNegativeButton("close", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+
 }
+

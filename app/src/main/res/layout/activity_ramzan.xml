@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.example.salma.myapplication.ContactActivity">
+    tools:context=".RamzanActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -24,14 +24,13 @@
             app:toolbarId="@+id/toolbar">
 
             <ImageView
-                android:id="@+id/image_id"
+                android:id="@+id/image_ramzan_donation"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/contact"
+                android:background="@drawable/donation"
                 android:fitsSystemWindows="true"
                 android:scaleType="fitXY"
                 app:layout_collapseMode="parallax" />
-
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -43,7 +42,6 @@
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <include
-        layout="@layout/content_contact" />
+    <include layout="@layout/content_ramzan" />
 
 </android.support.design.widget.CoordinatorLayout>

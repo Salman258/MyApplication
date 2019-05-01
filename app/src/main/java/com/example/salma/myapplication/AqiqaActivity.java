@@ -1,14 +1,22 @@
 package com.example.salma.myapplication;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,7 +39,6 @@ public class AqiqaActivity extends AppCompatActivity {
     private String email;
     private String phoneNumber;
     private String remarks;
-    private String formtype;
     private double amountPayable;
     private double percentPay;
     private double amountMultiply;
@@ -72,6 +79,26 @@ public class AqiqaActivity extends AppCompatActivity {
         assert getSupportActionBar() != null;   //null check
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)findViewById(R.id.toolbar_layout);
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = true;
+            int scrollRange = -1;
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
+                }
+                if (scrollRange + verticalOffset == 0) {
+                    collapsingToolbarLayout.setTitle("Aqiqah");
+                    isShow = true;
+                } else if(isShow) {
+                    collapsingToolbarLayout.setTitle(" ");
+                    isShow = false;
+                }
+            }
+        });
+
         String[] arrayAqiqaPay = new String[] {"Bank", "Cash"};
         aqiqaPay = (Spinner)findViewById(R.id.spinner_aqiqa_pay);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, arrayAqiqaPay);
@@ -86,7 +113,7 @@ public class AqiqaActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, arrayAqiqaType);
 
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         aqiqaType.setAdapter(adapter2);
 
         np.setMinValue(0);
@@ -108,72 +135,94 @@ public class AqiqaActivity extends AppCompatActivity {
             }
         });
 
-        btnDonate.setOnClickListener(new View.OnClickListener() {
+        aqiqaType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View view) {
-                transactionType = aqiqaPay.getSelectedItem().toString();
-                donationType = aqiqaPay.getSelectedItem().toString();
-                quantity = np.getValue();
-                name =txtName.getText().toString();
-                phoneNumber = txtphone.getText().toString();
-                email = txtemail.getText().toString();
-                remarks = txtremarks.getText().toString();
-                formtype = "2";
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                quantity =np.getValue();
                 amount = onSelectedItem(aqiqaType.getSelectedItem().toString());
                 amountMultiply = amount * quantity;
                 percentPay = amountMultiply * 3 / 100;
                 amountPayable = amountMultiply + percentPay;
                 amountValue.setText(String.valueOf(amountPayable));
                 amountValue.setTextColor(Color.RED);
+            }
 
-                Log.e("transactionType",transactionType);
-                Log.e("Donnation type",donationType);
-                Log.e("quantity",String.valueOf(quantity));
-                Log.e("name",name);
-                Log.e("phone Number",phoneNumber);
-                Log.e("email",email);
-                Log.e("remarks",remarks);
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
 
-                if(!(name.isEmpty() || email.isEmpty() || phoneNumber.isEmpty() || remarks.isEmpty())) {
-                    if(email.contains("@") && email.contains(".")){
-                        AndroidNetworking.post("http://saylaniwelfare.net/Saylani/Registration.php")
-                                .setTag("donations2")
-                                .setPriority(Priority.HIGH)
-                                .addBodyParameter("form_type","3")
-                                .addBodyParameter("donation_type","1")
-                                .addBodyParameter("OrderName",String.valueOf(onSelectedItem(aqiqaType.getSelectedItem().toString())))
-                                .addBodyParameter("OrderDisplay",aqiqaType.getSelectedItem().toString())
-                                .addBodyParameter("quantity",String.valueOf(quantity))
-                                .addBodyParameter("Amount",String.valueOf(amountPayable))
-                                .addBodyParameter("Name",name)
-                                .addBodyParameter("OrderInfo",email)
-                                .addBodyParameter("remarks",remarks)
-                                .build()
-                                .getAsString(new StringRequestListener() {
-                                    @Override
-                                    public void onResponse(String response) {
-                                        Log.e("Respnse", response);
+            }
+        });
 
-                                        Intent i = new Intent(getApplicationContext(),Webview.class);
-                                        i.putExtra("Response",response);
-                                        startActivity(i);
-                                        message.setText("");
-                                    }
+        btnDonate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-                                    @Override
-                                    public void onError(ANError anError) {
+                if(isNetworkConnectionAvailable()) {
+                    transactionType = aqiqaPay.getSelectedItem().toString();
+                    donationType = aqiqaPay.getSelectedItem().toString();
+                    quantity = np.getValue();
+                    name = txtName.getText().toString();
+                    phoneNumber = txtphone.getText().toString();
+                    email = txtemail.getText().toString();
+                    remarks = txtremarks.getText().toString();
+                    amount = onSelectedItem(aqiqaType.getSelectedItem().toString());
+                    amountMultiply = amount * quantity;
+                    percentPay = amountMultiply * 3 / 100;
+                    amountPayable = amountMultiply + percentPay;
+                    amountValue.setText(String.valueOf(amountPayable));
+                    amountValue.setTextColor(Color.RED);
 
-                                    }
-                                });
-                    }
-                    else{
+                    Log.e("transactionType", transactionType);
+                    Log.e("Donnation type", donationType);
+                    Log.e("quantity", String.valueOf(quantity));
+                    Log.e("name", name);
+                    Log.e("phone Number", phoneNumber);
+                    Log.e("email", email);
+                    Log.e("remarks", remarks);
+
+                    if (!(name.isEmpty() || email.isEmpty() || phoneNumber.isEmpty() || remarks.isEmpty())) {
+                        if (email.contains("@") && email.contains(".")) {
+                            AndroidNetworking.post("http://saylaniwelfare.net/Saylani/Registration.php")
+                                    .setTag("donations2")
+                                    .setPriority(Priority.HIGH)
+                                    .addBodyParameter("form_type", "4")
+                                    .addBodyParameter("OrderID", phoneNumber)
+                                    .addBodyParameter("donation_type", "1")
+                                    .addBodyParameter("OrderName", String.valueOf(onSelectedItem(aqiqaType.getSelectedItem().toString())))
+                                    .addBodyParameter("OrderDisplay", aqiqaType.getSelectedItem().toString())
+                                    .addBodyParameter("quantity", String.valueOf(quantity))
+                                    .addBodyParameter("Amount", String.valueOf(amountPayable))
+                                    .addBodyParameter("Name", name)
+                                    .addBodyParameter("OrderInfo", email)
+                                    .addBodyParameter("remarks", remarks)
+                                    .build()
+                                    .getAsString(new StringRequestListener() {
+                                        @Override
+                                        public void onResponse(String response) {
+                                            Log.e("Respnse", response);
+
+                                            Intent i = new Intent(getApplicationContext(), Webview.class);
+                                            i.putExtra("Response", response);
+                                            startActivity(i);
+                                            message.setText("");
+                                        }
+
+                                        @Override
+                                        public void onError(ANError anError) {
+
+                                        }
+                                    });
+                        } else {
+                            message.setTextColor(Color.RED);
+                            message.setText("Please enter a valid Email");
+                        }
+                    } else {
                         message.setTextColor(Color.RED);
-                        message.setText("Please enter a valid Email");
+                        message.setText("Please fill in all the fields");
                     }
-                }
-                else{
-                    message.setTextColor(Color.RED);
-                    message.setText("Please fill in all the fields");
+
+                }else{
+                    checkNetworkConnection();
                 }
             }
         });
@@ -227,5 +276,35 @@ public class AqiqaActivity extends AppCompatActivity {
         }
 
         return amount;
+    }
+
+    public boolean isNetworkConnectionAvailable(){
+        ConnectivityManager cm =
+                (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnected();
+        if(isConnected) {
+            return true;
+        }
+        else{
+            Log.d("Network","Not Connected");
+            return false;
+        }
+    }
+
+    public void checkNetworkConnection(){
+        AlertDialog.Builder builder =new AlertDialog.Builder(this);
+        builder.setTitle("No internet Connection");
+        builder.setMessage("Please turn on internet connection to continue");
+        builder.setNegativeButton("close", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 }
